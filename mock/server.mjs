@@ -18,6 +18,7 @@ const SITE = path.join(ROOT, 'site');
 const PAGES = path.join(SITE, 'canyontour.ru');
 const DATA = path.join(HERE, 'data');
 const DB_FILE = path.join(DATA, 'db.runtime.json');
+const WEB_DIST = path.join(ROOT, 'web', 'dist'); // new design, built by `node web/build.mjs`
 const PORT = Number(process.env.PORT || 8080);
 const TILDA_PROJECT_ID = '4368899';
 
@@ -281,10 +282,10 @@ function mimeOf(file) {
 const TRACKER_SCRIPT = /<script\b[^>]*>(?:(?!<\/script>)[\s\S])*?(mc\.yandex\.ru|_tmr|fbq\(|fbq=|tildastatscript|vk\.com\/rtrg|VK\.Retargeting)(?:(?!<\/script>)[\s\S])*?<\/script>/gi;
 const TRACKER_NOSCRIPT = /<noscript>\s*(?:<div>)?\s*<img[^>]+(mc\.yandex\.ru|mail\.ru|facebook\.com|vk\.com)[^>]*>\s*(?:<\/div>)?\s*<\/noscript>/gi;
 
-function renderHtml(file) {
+function renderHtml(file, base = '/') {
   let html = fs.readFileSync(file, 'utf8');
   html = html.replace(TRACKER_SCRIPT, '<!-- [mock] analytics removed -->').replace(TRACKER_NOSCRIPT, '');
-  html = html.replace(/https?:\/\/canyontour\.ru\//g, '/');
+  html = html.replace(/https?:\/\/canyontour\.ru\//g, base);
   html = html.replace(/<head>/i, '<head><script src="/__mock/shim.js"></script>');
   return html;
 }
@@ -309,6 +310,18 @@ function resolveStatic(pathname, search) {
   return null;
 }
 
+// New design: pretty URLs like on the live site (/elbrus -> web/dist/elbrus.html), assets under /assets, /img
+function resolveWeb(pathname) {
+  if (!fs.existsSync(path.join(WEB_DIST, 'index.html'))) return null;
+  let rel = decodeURIComponent(pathname);
+  if (rel === '/' || rel === '/index') rel = '/index.html';
+  else if (/^\/[\w-]+$/.test(rel)) rel += '.html';
+  else if (!/^\/([\w-]+\.html|(assets|img)\/.+)$/.test(rel)) return null;
+  const abs = path.normalize(path.join(WEB_DIST, rel));
+  if (!abs.startsWith(WEB_DIST + path.sep)) return null;
+  return fs.existsSync(abs) && fs.statSync(abs).isFile() ? abs : null;
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   if (req.method === 'OPTIONS') return send(res, 204, '');
@@ -323,13 +336,21 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return send(res, 404, { error: 'not_found' });
     if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, { error: 'method_not_allowed' });
 
-    const file = resolveStatic(url.pathname, url.search);
+    // /old/<slug> -> the original Tilda page from the mirror (for side-by-side comparison)
+    const old = /^\/old(\/.*)?$/.exec(url.pathname);
+    const webFile = old ? null : resolveWeb(url.pathname);
+    const file = webFile || resolveStatic(old ? old[1] || '/' : url.pathname, url.search);
     if (!file) {
       console.warn(`[404] ${url.pathname}${url.search}`);
+      const page404 = path.join(WEB_DIST, '404.html');
+      if (!old && /^\/[\w-]*$/.test(url.pathname) && fs.existsSync(page404)) {
+        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(fs.readFileSync(page404));
+      }
       return send(res, 404, `Not in mirror: ${url.pathname}\nRun tools/fetch_missing.py to fetch missing assets`);
     }
     const type = mimeOf(file);
-    const body = type.startsWith('text/html') ? renderHtml(file) : fs.readFileSync(file);
+    const body = webFile ? fs.readFileSync(file) : type.startsWith('text/html') ? renderHtml(file, old ? '/old/' : '/') : fs.readFileSync(file);
     res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-cache' });
     res.end(req.method === 'HEAD' ? undefined : body);
   } catch (e) {
@@ -340,4 +361,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`canyontour mock: http://localhost:${PORT}  (tours=${TOURS.length}, departures=${DEPARTURES.length} synthetic)`);
+  console.log(fs.existsSync(path.join(WEB_DIST, 'index.html'))
+    ? `  new design: http://localhost:${PORT}/   original Tilda pages: http://localhost:${PORT}/old/`
+    : '  web/dist not built yet (node web/build.mjs) -> serving the original Tilda pages');
 });
