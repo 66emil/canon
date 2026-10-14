@@ -50,8 +50,11 @@ node mock/server.mjs      # http://localhost:8080/ — новый дизайн, 
 
 ### Деплой на Vercel
 
-Проект подключён к Vercel через GitHub: каждый пуш собирает сайт заново. Настройки лежат в
-репозитории и перекрывают настройки в панели Vercel:
+Проект Vercel — `canon_v1` (команда «sonya's projects», https://canonv1.vercel.app), подключён к
+этому репозиторию `66emil/canon`; production-ветка — `main`, каждый пуш в неё собирает и
+публикует сайт, пуши в другие ветки дают превью. Репозиторий `66emil/canon_v1` Vercel создал при
+первом импорте, он больше не используется. Настройки сборки лежат здесь и перекрывают настройки
+в панели Vercel:
 
 - `vercel.json`: `npm install` → `npm run build` (= `node web/build.mjs`), публикуется `web/dist`;
   `cleanUrls` даёт адреса как на живом сайте (`/elbrus`, а `/elbrus.html` редиректит на них);
