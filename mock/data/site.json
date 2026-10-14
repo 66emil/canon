@@ -1,0 +1,57 @@
+{
+  "_source": "Тексты с публичных страниц canyontour.ru (главная, /campig, подвал). Собрано вручную 2026-10-14.",
+  "company": {
+    "brand": "КаньонТур",
+    "legalName": "ООО \"КАНЬОНТУР\"",
+    "rto": "024662",
+    "inn": "7720847530",
+    "kpp": "772001001",
+    "ogrn": "1217700133650",
+    "legalAddress": "111024, г. Москва, ул. 2-я Энтузиастов, д. 5 к. 37, ком. 58",
+    "bank": { "name": "ПАО СБЕРБАНК", "bik": "044525225", "account": "40702810438000213958", "corrAccount": "30110181040000000225" }
+  },
+  "contacts": {
+    "phone": "+79137757990",
+    "phoneDisplay": "+7 (913) 775 79 90",
+    "email": "canyontour99@gmail.com",
+    "messengers": ["telegram", "whatsapp"],
+    "socials": ["vk", "instagram", "telegram", "youtube"]
+  },
+  "camping": {
+    "location": "Кабардино-Балкария, с. Сармаково",
+    "description": "Отсюда начинаются все путешествия. Душевые и туалетные комнаты, кухня и столовая, беседка с мангалом, шатёр для просмотра фильмов на проекторе. За дополнительную стоимость можно забронировать гостевой дом целиком или место в нём.",
+    "accommodation": [
+      { "id": "house-4", "name": "В четырёхместном домике", "pricePerPersonPerNightRub": 1000 },
+      { "id": "house-2", "name": "В двухместном домике с двумя кроватями", "pricePerPersonPerNightRub": 1500 }
+    ]
+  },
+  "booking": {
+    "prepaymentPercent": 30,
+    "freeCancellationDaysBefore": 14,
+    "maxGroupSize": 12,
+    "minAge": 14,
+    "staffPerGroup": { "instructors": 1, "horseGuides": 3 },
+    "meetingPoint": "Минеральные Воды (аэропорт / ж/д вокзал)"
+  },
+  "team": [
+    { "name": "Вадим", "role": "Основатель КАНЬОНТУР" },
+    { "name": "Аслан", "role": "Гид — коневод" },
+    { "name": "Тахир", "role": "Гид — коневод" },
+    { "name": "Ирина", "role": "Гид — инструктор" },
+    { "name": "Настя", "role": "Гид — инструктор" },
+    { "name": "Магомет", "role": "Гид — коневод" },
+    { "name": "Карина", "role": "Гид — инструктор" },
+    { "name": "Алина", "role": "SMM" }
+  ],
+  "leadForm": {
+    "_note": "Поля публичных форм Tilda (имена input name как на сайте)",
+    "fields": [
+      { "name": "Name", "type": "text", "required": true },
+      { "name": "Phone", "type": "tel", "required": true },
+      { "name": "Email", "type": "email", "required": "зависит от формы: в 20 формах обязательное, в 17 нет" },
+      { "name": "Какой тур вас заинтересовал", "type": "radio", "required": true, "onlyOn": "главная, попап «Пойдем в поход?»",
+        "options": ["Выходные в горах", "Эльбрус на восходе солнца", "Путь в ущелье солнца (Древний Схауат)", "Инал - по пути с Икаром", "Гедмыш Суу", "Таинственный Тызыл", "Ещё не определился/определилась"] }
+    ],
+    "successUrl": "/success"
+  }
+}
