@@ -88,6 +88,7 @@ ul, ol { padding: 0; list-style: none; }
 .skip { position: fixed; left: 12px; top: -60px; z-index: 200; background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 10px; transition: top .2s; }
 .skip:focus { top: 12px; }
 .anchor-alias { position: absolute; margin-top: calc(-1 * var(--hdr)); }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------------------------------------------------------------- typography */

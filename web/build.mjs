@@ -2,10 +2,11 @@
 // Static build of the new canyontour.ru design. Node >= 18, no npm dependencies.
 //
 //   node web/build.mjs          -> web/dist (HTML, assets, resized photos)
+//   npm run build               same, on Vercel (see vercel.json)
 //
 // Content comes from mock/data/*.json and web/content/content.json
 // (regenerate the latter with: python3 -I tools/extract_content.py site/canyontour.ru web/content/content.json).
-// Photos are taken from the mirror in site/static.tildacdn.com and resized with macOS `sips`.
+// Photos are taken from the mirror in site/static.tildacdn.com and resized with sharp (npm install) or macOS `sips`.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -23,7 +24,7 @@ const DIST = path.join(WEB, 'dist');
 
 const t0 = Date.now();
 const d = loadData(ROOT);
-const img = createImages({ srcRoot: path.join(ROOT, 'site', 'static.tildacdn.com'), outDir: path.join(DIST, 'img') });
+const img = await createImages({ srcRoot: path.join(ROOT, 'site', 'static.tildacdn.com'), outDir: path.join(DIST, 'img') });
 
 // ---------- assets
 const assets = path.join(DIST, 'assets');
@@ -49,4 +50,4 @@ pages['404'] = renderNotFound(d, img);
 for (const [name, html] of Object.entries(pages)) fs.writeFileSync(path.join(DIST, `${name}.html`), html);
 
 const stats = await img.flush({ log: (m) => console.log(m) });
-console.log(`web/dist: ${Object.keys(pages).length} pages, ${stats.sources} photos -> ${stats.total} files (${stats.created} new) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+console.log(`web/dist: ${Object.keys(pages).length} pages, ${stats.sources} photos -> ${stats.total} files (${stats.created} new, ${stats.engine}) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);

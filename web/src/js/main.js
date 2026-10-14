@@ -659,7 +659,12 @@
           name: f.name.value.trim(), phone: ph, email: f.email.value.trim() || undefined, consent: true,
           pageUrl: location.href, utm: Object.keys(utm).length ? utm : undefined,
         };
-        if (f.tourSlug && f.tourSlug.value) payload.tourSlug = f.tourSlug.value;
+        if (f.tourSlug && f.tourSlug.value) {
+          payload.tourSlug = f.tourSlug.value;
+          const t = TOURS.find((x) => x.slug === payload.tourSlug);
+          if (t) payload.tourName = t.name;
+        }
+        if (f.website && f.website.value) payload.website = f.website.value;
         const choice = form.querySelector('input[name="tourName"]:checked');
         if (choice) payload.tourName = choice.value;
         if (f.dates && f.dates.value && !$('[data-dates-field]', form).hidden) payload.comment = `Желаемые даты: ${f.dates.value}`;

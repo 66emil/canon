@@ -210,6 +210,7 @@ export function leadForm(d, { id, tours = [], tour = null, withDates = false, ch
       <label class="field"><span class="field__l">Ваше имя</span><input name="name" autocomplete="name" required maxlength="80"><span class="field__err" data-err="name">Как к вам обращаться?</span></label>
       <label class="field"><span class="field__l">Телефон</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+7 (___) ___-__-__" data-phone><span class="field__err" data-err="phone">Проверьте номер телефона</span></label>
     </div>
+    <label class="hp" aria-hidden="true">Не заполняйте это поле<input name="website" tabindex="-1" autocomplete="off"></label>
     <label class="field"><span class="field__l">E-mail <i>— по желанию</i></span><input name="email" type="email" autocomplete="email" maxlength="120"><span class="field__err" data-err="email">Проверьте адрес почты</span></label>
     <label class="check"><input type="checkbox" name="consent" required><span class="check__box">${icon('check')}</span><span>Я согласен(-на) с <a href="/policy" target="_blank">политикой конфиденциальности</a> и даю согласие на обработку моих персональных данных</span></label>
     <span class="field__err field__err--consent" data-err="consent">Нужно ваше согласие</span>

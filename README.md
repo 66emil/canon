@@ -39,8 +39,8 @@ node mock/server.mjs      # http://localhost:8080/ — новый дизайн, 
 - Данные: `mock/data/tours.json`, `faq.json`, `site.json` + `web/content/content.json` (тексты,
   фото по дням, даты из форм быстрого бронирования). Последний пересобирается из зеркала:
   `python3 -I tools/extract_content.py site/canyontour.ru web/content/content.json`.
-- Фото берутся из `site/static.tildacdn.com` и ужимаются `sips` (macOS) до 480/960/1600 px;
-  без `sips` копируются оригиналы.
+- Фото берутся из `site/static.tildacdn.com` и ужимаются до 480/960/1600 px через `sharp`
+  (после `npm install`) или `sips` (macOS); без них копируются оригиналы.
 - Формы отправляют `POST /api/leads` (мок), затем редирект на `/success`; выбранные даты уходят
   в `comment`. Без бэкенда форма показывает телефон и мессенджеры.
 - Шрифты свои (Manrope, Lora Italic с Google Fonts, Gropled из проекта Tilda) в `web/src/fonts`.
@@ -48,7 +48,25 @@ node mock/server.mjs      # http://localhost:8080/ — новый дизайн, 
 - Учтены `prefers-reduced-motion` (анимации отключаются, лента листается обычным свайпом),
   работа без JS, клавиатура (фокус-ловушки в меню и модалках, skip-link).
 
+### Деплой на Vercel
+
+Проект подключён к Vercel через GitHub: каждый пуш собирает сайт заново. Настройки лежат в
+репозитории и перекрывают настройки в панели Vercel:
+
+- `vercel.json`: `npm install` → `npm run build` (= `node web/build.mjs`), публикуется `web/dist`;
+  `cleanUrls` даёт адреса как на живом сайте (`/elbrus`, а `/elbrus.html` редиректит на них);
+  долгий кэш для `/img`, `/assets`.
+- `package.json`: зависимость `sharp` — на Vercel (Linux) фото ужимаются им, локально на macOS
+  без `npm install` — через `sips`.
+- `api/leads.js`: серверная функция для форм (`POST /api/leads`, тот же контракт, что у мока).
+  Заявки всегда пишутся в логи функции (Vercel → Logs, поиск `[lead]`). Чтобы они приходили в
+  Telegram, задайте в Vercel → Settings → Environment Variables `TELEGRAM_BOT_TOKEN` и
+  `TELEGRAM_CHAT_ID` и сделайте Redeploy. Если Telegram настроен, но не принял сообщение,
+  посетитель видит просьбу позвонить, а не «успех».
+
 ```
+api/leads.js                 функция приёма заявок (Vercel)
+vercel.json, package.json    настройки сборки и деплоя
 web/
   build.mjs                  сборка
   content/content.json       извлечённый контент (генерируется)

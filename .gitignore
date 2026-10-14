@@ -1,2 +1,4 @@
 web/dist/
 mock/data/db.runtime.json
+node_modules/
+.vercel

@@ -1,0 +1,16 @@
+{
+  "name": "canyontour-site",
+  "private": true,
+  "type": "module",
+  "description": "Новый дизайн canyontour.ru: статическая сборка (web/) + функция приёма заявок для Vercel (api/)",
+  "scripts": {
+    "build": "node web/build.mjs",
+    "mock": "node mock/server.mjs"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "sharp": "0.33.5"
+  }
+}
